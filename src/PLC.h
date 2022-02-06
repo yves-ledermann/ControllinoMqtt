@@ -15,11 +15,11 @@
 #define MODBUS_INTERVAL 80
 #define MODBUS_SIZE 16
 #define INPUT_INTERVAL 15
-#define INPUT_COUNT 19
-#define RELAY_COUNT 16
-#define OUTPUT_COUNT 24
+#define INPUT_COUNT 12
+#define RELAY_COUNT 10
+#define OUTPUT_COUNT 12
 #define OUTPUT_PIN_SECTION_1 12
-#define OUTPUT_PIN_SECTION_2 20
+//#define OUTPUT_PIN_SECTION_2 20
 
 // This MACRO defines number of the com port that is used for RS 485 interface.
 // For MAXI and MEGA RS485 is reserved UART Serial3.
@@ -60,9 +60,9 @@ class PLC {
         static uint16_t modbus_reg;
         static uint16_t modbus_values[8];
         static uint32_t modbus_millis;
-        static uint8_t pins[19];
-        static uint8_t pin_values[19];
-        static uint8_t pin_debounce[19];
+        static uint8_t pins[INPUT_COUNT];
+        static uint8_t pin_values[INPUT_COUNT];
+        static uint8_t pin_debounce[INPUT_COUNT];
         static uint32_t pin_millis;
         static cppQueue queue;
         static uint8_t validEthernet;

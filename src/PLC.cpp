@@ -27,30 +27,26 @@ uint8_t PLC::validEthernet = 0;
 
 cppQueue PLC::queue(sizeof(ModbusWriteStruct), 10, FIFO);
 
-const char * names[INPUT_COUNT] = {"A0","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10",
-		"A11","A12","A13","A14","A15","I16","I17","I18"};
+const char * names[INPUT_COUNT] = {"A0","A1","A2","A3","A4","A5","A6","A7","A8","A9","I0","I1"};
 uint8_t PLC::pins[INPUT_COUNT] = {
 	CONTROLLINO_A0,  CONTROLLINO_A1,  CONTROLLINO_A2,
 	CONTROLLINO_A3,	 CONTROLLINO_A4,  CONTROLLINO_A5,
 	CONTROLLINO_A6,	 CONTROLLINO_A7,  CONTROLLINO_A8,
-	CONTROLLINO_A9,	 CONTROLLINO_A10, CONTROLLINO_A11,
-	CONTROLLINO_A12, CONTROLLINO_A13, CONTROLLINO_A14,
-	CONTROLLINO_A15, CONTROLLINO_I16, CONTROLLINO_I17,
-	CONTROLLINO_I18
+	CONTROLLINO_A9,	 CONTROLLINO_IN0, CONTROLLINO_IN1
 };
 #ifdef SIMULATED_CONTROLLINO
-uint8_t PLC::pin_values[INPUT_COUNT] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+uint8_t PLC::pin_values[INPUT_COUNT] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 #else
-uint8_t PLC::pin_values[INPUT_COUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t PLC::pin_values[INPUT_COUNT] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 #endif
-uint8_t PLC::pin_debounce[INPUT_COUNT]  = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t PLC::pin_debounce[INPUT_COUNT]  = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 uint32_t PLC::pin_millis = 0;
 
 long PLC::mqtt_millis = 0;
 
 void PLC::setup() {
-#ifdef CONTROLLINO_MEGA
-	DEBUG_PRINT("CONTROLLINO_MEGA defined");
+#ifdef CONTROLLINO_MAXI
+	DEBUG_PRINT("CONTROLLINO_MAXI defined");
 #endif
 
 
@@ -112,7 +108,7 @@ void PLC::loopInputs() {
 		return;
 	}
 	pin_millis = millis();
-	for (int i = 0; i < 19; i++) {
+	for (int i = 0; i < INPUT_COUNT; i++) {
 		byte pinValue = digitalRead(pins[i]);
 		if (pinValue != pin_values[i]) {
 			pin_debounce[i] = (pin_debounce[i] << 1) | pinValue;
@@ -225,7 +221,7 @@ void PLC::initializeEthernet() {
 void PLC::initializeInputs() {  
 	INFO_PRINT("Initializing inputs...");
 	
-	for(int i=0;i<19;i++) {
+	for(int i=0;i<INPUT_COUNT;i++) {
 		DEBUG_PRINT_PARAM("Input  ", i);
 		DEBUG_PRINT_PARAM(" pin ", names[i]);
 
@@ -391,10 +387,10 @@ void PLC::updateOutput(char* outputName,int newState) {
       pin = CONTROLLINO_R0 + outputNumber;
     } else if (outputName[0] == 'D' && outputNumber >=0 && outputNumber<OUTPUT_PIN_SECTION_1) {
       pin = CONTROLLINO_D0 + outputNumber;
-    } else if (outputName[0] == 'D' && outputNumber >=OUTPUT_PIN_SECTION_1 && outputNumber<OUTPUT_PIN_SECTION_2) {
-      pin = CONTROLLINO_D12 + outputNumber - OUTPUT_PIN_SECTION_1;
-    } else if (outputName[0] == 'D' && outputNumber >=20 && outputNumber< OUTPUT_COUNT) {
-      pin = CONTROLLINO_D20 + outputNumber - OUTPUT_PIN_SECTION_2;
+    // } else if (outputName[0] == 'D' && outputNumber >=OUTPUT_PIN_SECTION_1 && outputNumber<OUTPUT_PIN_SECTION_2) {
+    //   pin = CONTROLLINO_D12 + outputNumber - OUTPUT_PIN_SECTION_1;
+    // } else if (outputName[0] == 'D' && outputNumber >=20 && outputNumber< OUTPUT_COUNT) {
+    //   pin = CONTROLLINO_D20 + outputNumber - OUTPUT_PIN_SECTION_2;
     } else {
       log("Invalid output");
       return;
